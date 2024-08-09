@@ -1,13 +1,13 @@
 # This is a sample Python script.
 import sys
 
-import numpy
 import openpyxl
 import pandas
 from PyQt5 import QtWidgets
 from PIL import Image
-from PyQt5.QtWidgets import QFileDialog
 from openpyxl.reader.excel import load_workbook
+
+from ui.diffPage import UiDiffPage
 
 
 # Press Shift+F10 to execute it or replace it with your code.
@@ -74,11 +74,16 @@ def hyper():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     print_hi('PyCharm')
-    hyper()
-    # app = QtWidgets.QApplication(sys.argv)  # 初始化界面
-    # MainWindow = QtWidgets.QWidget()  # 生成一个主窗口
-    # MainWindow.show()  # 显示主窗口
-    # sys.exit(app.exec_())  # 在线程中退出
+    app = QtWidgets.QApplication(sys.argv)  # 初始化界面
+    # MainWindow = QtWidgets.QMainWindow()  # 生成一个主窗口
+    #
+    # #MainWindow.show()  # 显示主窗口
+    # page = Testy()
+    # page.setupUi(MainWindow)
+    # MainWindow.show()
+    window = UiDiffPage()
+    window.show()
+    sys.exit(app.exec_())  # 在线程中退出
 
 
 
