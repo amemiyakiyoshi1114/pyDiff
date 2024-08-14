@@ -63,12 +63,6 @@ def find_type():
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
     app = QtWidgets.QApplication(sys.argv)  # 初始化界面
-    # MainWindow = QtWidgets.QMainWindow()  # 生成一个主窗口
-    #
-    # #MainWindow.show()  # 显示主窗口
-    # page = Testy()
-    # page.setupUi(MainWindow)
-    # MainWindow.show()
     window = UiDiffPage()
     window.show()
     sys.exit(app.exec_())  # 在线程中退出

@@ -1,8 +1,9 @@
 import ast
 from functools import partial
 
+import numpy
 from PyQt5 import QtCore
-from PyQt5.QtWidgets import QWidget, QTabWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem
+from PyQt5.QtWidgets import QWidget, QTabWidget, QLabel, QHBoxLayout, QTableWidget, QTableWidgetItem, QMessageBox
 from uitl.type import create_dataframe
 
 class UiNaviPage(QWidget):
@@ -44,4 +45,7 @@ class UiNaviPage(QWidget):
         tuple_values = ast.literal_eval(mes)
         row,col = tuple_values
         print(f"Cell clicked: Tab {sheet_name},row {row}, col {col}")
+        if (row is None) or (col is None):
+            QMessageBox.about(self,"maybe","here is picture or other things not digital")
+            return
         ui_diff_page.navigate_to_row(int(sheet_name), row, col)

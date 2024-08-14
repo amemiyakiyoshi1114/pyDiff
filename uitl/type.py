@@ -30,8 +30,6 @@ def find_diif(df1, df2):
 
     return differences
 
-def col_and_row(df1,df2):
-    print (1)
 
 def print_color(old_directory, new_directory):
     old_table = pandas.ExcelFile(old_directory)

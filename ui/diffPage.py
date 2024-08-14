@@ -81,6 +81,7 @@ class UiDiffPage(QWidget):
         table_widget = self.tableOldVersion.widget(tab)
         item = table_widget.item(row, col)
         if item:
+            print("ready")
             # 滚动到指定的行列
             table_widget.scrollToItem(item)
             table_widget.update()  # 强制更新界面
@@ -91,15 +92,20 @@ class UiDiffPage(QWidget):
         table_widget = self.tableNewVersion.widget(tab)
         item = table_widget.item(row, col)
         if item:
+            print("ready")
             table_widget.scrollToItem(item)
             table_widget.update()
             print(item.text())
             print("scroll")
+        else: return
 
     #slots
     @QtCore.pyqtSlot()
     def on_pushButtonOldVersion_clicked(self):
         folder_path = QFileDialog.getOpenFileName(self, "选择旧版表格", "/", "Files(*.xlsx)")
+        if not folder_path[0]:
+            QMessageBox.warning(self, "warn", "please choose file!", QMessageBox.Ok)
+            return
         dir = folder_path.__getitem__(0)
         self.labelOldVersionDir.clear()
         self.labelOldVersionDir.setText(dir)
@@ -107,10 +113,12 @@ class UiDiffPage(QWidget):
         self.tableOldVersion.clear()
         load_table(self.labelOldVersionDir.text(), self.tableOldVersion)
 
-
     @QtCore.pyqtSlot()
     def on_pushButtonNewVersion_clicked(self):
         folder_path = QFileDialog.getOpenFileName(self, "选择新版表格", "/", "Files(*.xlsx)")
+        if not folder_path[0]:
+            QMessageBox.warning(self, "warn", "please choose file!", QMessageBox.Ok)
+            return
         dir = folder_path.__getitem__(0)
         self.labelNewVersionDir.clear()
         self.labelNewVersionDir.setText(dir)
@@ -120,21 +128,17 @@ class UiDiffPage(QWidget):
 
     @QtCore.pyqtSlot()
     def on_pushButtonDiff_clicked(self):
-
         if self.labelOldVersionDir.text() == "old version directory":
             QMessageBox.information(self, "hint", "please choose the old version excel", QMessageBox.Ok)
             return
         if self.labelNewVersionDir.text() == "new version directory":
             QMessageBox.information(self, "hint", "please choose the new version excel", QMessageBox.Ok)
             return
-        # 检查目录是否有效
-        if not self.labelOldVersionDir.text() or not self.labelNewVersionDir.text():
-            QMessageBox.warning(self, "warn", "please choose the file", QMessageBox.Ok)
-            return
         self.all_differences = print_color(self.labelOldVersionDir.text(), self.labelNewVersionDir.text())
         print(self.all_differences)
         if not self.all_differences:
             QMessageBox.about(self, "result", "they are the same")
+            return
         for sheet_index, differences in self.all_differences.items():
             # 获取对应的 QTableWidget
             table_widget1 = self.tableOldVersion.widget(sheet_index)  # 根据索引获取对应的 tab
@@ -166,7 +170,11 @@ class UiDiffPage(QWidget):
         self.navi_page = UiNaviPage(self)
         self.navi_page.show()
 
-
+    def closeEvent(self, event):
+        if self.navi_page:  # 如果子窗口存在
+            self.navi_page.close()  # 关闭子窗口
+            self.navi_page = None  # 清空引用
+        event.accept()  # 继续关闭父窗口
 
 
 if __name__ == '__main__':
