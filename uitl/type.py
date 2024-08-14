@@ -1,3 +1,5 @@
+from collections import defaultdict
+
 import pandas
 from PyQt5.QtWidgets import QTableWidgetItem, QTableWidget
 
@@ -20,14 +22,16 @@ def find_diif(df1, df2):
             #详细比较逻辑
             if value1 == 'nan' and value2  == 'nan':continue
             if value1 == 'nan' and value2 != 'nan':
-                differences.append((i, j, 'green'))  # 增加
+                differences.append((i, j, 'add'))  # 增加
             elif value1 != 'nan' and value2 == 'nan':
-                differences.append((i, j, 'red'))  # 删除
+                differences.append((i, j, 'delete'))  # 删除
             elif  value1 != 'nan' and value2 != 'nan' and value1 != value2:
-                differences.append((i, j, 'yellow'))  # 修改
+                differences.append((i, j, 'modify'))  # 修改
 
     return differences
 
+def col_and_row(df1,df2):
+    print (1)
 
 def print_color(old_directory, new_directory):
     old_table = pandas.ExcelFile(old_directory)
@@ -72,6 +76,35 @@ def add_sheet_to_tab(sheet_name, df, table):
 
     table.addTab(table_widget, sheet_name)
 
+def create_dataframe(data):
+    sheets = []  # 用于存储不同的 DataFrame
+
+    for index, entries in data.items():
+        columns = defaultdict(list)
+        valid_columns = ['add', 'delete', 'modify']
+
+        for entry in entries:
+            row, col, action = entry
+            if action in valid_columns:
+                columns[action].append((row, col))
+
+        # 确保所有列的长度一致
+        max_length = max(len(v) for v in columns.values())
+        for key in columns.keys():
+            while len(columns[key]) < max_length:
+                columns[key].append((None, None))  # 填充 None 以保持长度一致
+
+        # 创建 DataFrame
+        df = pandas.DataFrame.from_dict(columns, orient='index').transpose()
+        df.sheet_key = index
+        sheets.append(df)  # 将 DataFrame 添加到列表中
+        #print(df.sheet_key)
+
+    return sheets
+
 
 if __name__ == '__main__':
-    print(print_color("D:/words/培训/组内培训记录/测试账号信息.xlsx","D:/words/培训/组内培训记录/测试账号信息 - 副本.xlsx"))
+    data = print_color("D:/words/培训/组内培训记录/测试账号信息.xlsx","D:/words/培训/组内培训记录/测试账号信息 - 副本.xlsx")
+    table = create_dataframe(data)
+    for i, sheet in enumerate(table):
+        print(f"Sheet {i}:\n{sheet}\n")

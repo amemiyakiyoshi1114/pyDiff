@@ -4,7 +4,9 @@ from PyQt5 import QtCore, QtWidgets
 from PyQt5.QtCore import QMetaObject, Qt
 from PyQt5.QtGui import QColor
 from PyQt5.QtWidgets import QWidget, QPushButton, QLabel, QTableWidget, QVBoxLayout, QHBoxLayout, QApplication, \
-    QFileDialog, QTabWidget, QTableWidgetItem
+    QFileDialog, QTabWidget, QTableWidgetItem, QMessageBox
+
+from ui.naviPage import UiNaviPage
 from uitl.type import load_table,print_color
 
 
@@ -62,8 +64,37 @@ class UiDiffPage(QWidget):
         self.mainLayout.addLayout(self.newVersionShow)
         self.setLayout(self.mainLayout)
 
+        #data
+        self.all_differences = {}
+        #childen
+        self.navi_page = None
+
         # slot optimize
         QMetaObject.connectSlotsByName(self)
+
+    #navigate
+    def navigate_to_row(self, tab, row, col):
+        # 切换到指定的 tab
+        print(f"navi {tab , row , col}")
+        self.tableOldVersion.setCurrentIndex(tab)
+        # 获取当前 tab 的 QTableWidget
+        table_widget = self.tableOldVersion.widget(tab)
+        item = table_widget.item(row, col)
+        if item:
+            # 滚动到指定的行列
+            table_widget.scrollToItem(item)
+            table_widget.update()  # 强制更新界面
+            print(item.text())
+            print("scroll")
+
+        self.tableNewVersion.setCurrentIndex(tab)
+        table_widget = self.tableNewVersion.widget(tab)
+        item = table_widget.item(row, col)
+        if item:
+            table_widget.scrollToItem(item)
+            table_widget.update()
+            print(item.text())
+            print("scroll")
 
     #slots
     @QtCore.pyqtSlot()
@@ -75,6 +106,7 @@ class UiDiffPage(QWidget):
         print(self.labelOldVersionDir.text())
         self.tableOldVersion.clear()
         load_table(self.labelOldVersionDir.text(), self.tableOldVersion)
+
 
     @QtCore.pyqtSlot()
     def on_pushButtonNewVersion_clicked(self):
@@ -88,9 +120,22 @@ class UiDiffPage(QWidget):
 
     @QtCore.pyqtSlot()
     def on_pushButtonDiff_clicked(self):
-        all_differences = print_color(self.labelOldVersionDir.text(), self.labelNewVersionDir.text())
-        print(all_differences)
-        for sheet_index, differences in all_differences.items():
+
+        if self.labelOldVersionDir.text() == "old version directory":
+            QMessageBox.information(self, "hint", "please choose the old version excel", QMessageBox.Ok)
+            return
+        if self.labelNewVersionDir.text() == "new version directory":
+            QMessageBox.information(self, "hint", "please choose the new version excel", QMessageBox.Ok)
+            return
+        # 检查目录是否有效
+        if not self.labelOldVersionDir.text() or not self.labelNewVersionDir.text():
+            QMessageBox.warning(self, "warn", "please choose the file", QMessageBox.Ok)
+            return
+        self.all_differences = print_color(self.labelOldVersionDir.text(), self.labelNewVersionDir.text())
+        print(self.all_differences)
+        if not self.all_differences:
+            QMessageBox.about(self, "result", "they are the same")
+        for sheet_index, differences in self.all_differences.items():
             # 获取对应的 QTableWidget
             table_widget1 = self.tableOldVersion.widget(sheet_index)  # 根据索引获取对应的 tab
             table_widget2 = self.tableNewVersion.widget(sheet_index)
@@ -103,21 +148,23 @@ class UiDiffPage(QWidget):
                     item1 = QTableWidgetItem()  # 如果没有项，则创建一个新的
                     table_widget1.setItem(i, j, item1)  # 设置单元格项
                 if item2 is None:
-                    item2 = QTableWidgetItem()  # 如果没有项，则创建一个新的
-                    table_widget2.setItem(i, j, item2)  # 设置单元格项
+                    item2 = QTableWidgetItem()
+                    table_widget2.setItem(i, j, item2)
 
                 # 根据颜色设置背景
-                if color == 'green':
-                    item1.setBackground(QColor(0, 255, 0))  # 绿色
-                    item2.setBackground(QColor(0, 255, 0))  # 绿色
-                elif color == 'red':
-                    item1.setBackground(QColor(255, 0, 0))  # 红色
-                    item2.setBackground(QColor(255, 0, 0))  # 绿色
-                elif color == 'yellow':
-                    item1.setBackground(QColor(255, 255, 0))  # 黄色
-                    item2.setBackground(QColor(255, 255, 0))  # 黄色
+                if color == 'add':
+                    item1.setBackground(QColor(125, 235, 247))
+                    item2.setBackground(QColor(125, 235, 247))
+                elif color == 'delete':
+                    item1.setBackground(QColor(246, 110, 133))
+                    item2.setBackground(QColor(246, 110, 133))
+                elif color == 'modify':
+                    item1.setBackground(QColor(247, 252, 188))
+                    item2.setBackground(QColor(247, 252, 188))
 
         print("diff")
+        self.navi_page = UiNaviPage(self)
+        self.navi_page.show()
 
 
 

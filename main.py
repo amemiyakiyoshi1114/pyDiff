@@ -13,11 +13,6 @@ from ui.diffPage import UiDiffPage
 # Press Shift+F10 to execute it or replace it with your code.
 # Press Double Shift to search everywhere for classes, files, tool windows, actions, and settings.
 
-
-def print_hi(name):
-    # Use a breakpoint in the code line below to debug your script.
-    print(f'Hi, {name}')  # Press Ctrl+F8 to toggle the breakpoint.
-
 def find_type():
     df = pandas.read_excel("D:\\Users\\zhongsiyang\\test.xlsx")
     wb = load_workbook("D:\\Users\\zhongsiyang\\test.xlsx")
@@ -55,25 +50,18 @@ def find_type():
     print (w)
     print (img1,img2,img3)
 
-def openFile(self):
-    a = 1
-    # 其中self指向自身，"读取文件夹"为标题名，"./"为打开时候的当前路径
-    # directory1 = QFileDialog.getExistingDirectory(self,  "选取文件夹", "./")  # 起始路径
-    # print(directory1)
-
-def hyper():
-    #from openpyxl import load_workbook
-        main_book = openpyxl.load_workbook("D:\\Users\\zhongsiyang\\test.xlsx")
-        main_sheet = main_book.active
-        print(main_sheet.cell(1, 1).value)
-        if main_sheet.cell(1,1).hyperlink:
-            print(main_sheet.cell(1, 1).hyperlink.target)
-        else:print("nothing")
+# def hyper():
+#     #from openpyxl import load_workbook
+#         main_book = openpyxl.load_workbook("D:\\Users\\zhongsiyang\\test.xlsx")
+#         main_sheet = main_book.active
+#         print(main_sheet.cell(1, 1).value)
+#         if main_sheet.cell(1,1).hyperlink:
+#             print(main_sheet.cell(1, 1).hyperlink.target)
+#         else:print("nothing")
 
 
 # Press the green button in the gutter to run the script.
 if __name__ == '__main__':
-    print_hi('PyCharm')
     app = QtWidgets.QApplication(sys.argv)  # 初始化界面
     # MainWindow = QtWidgets.QMainWindow()  # 生成一个主窗口
     #
